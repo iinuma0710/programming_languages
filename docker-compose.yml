@@ -1,0 +1,9 @@
+version: '3'
+services:
+    pytorch:
+        image: programming_languages_env:latest
+        container_name: programming_languages_container
+        tty: true
+        stdin_open: true
+        volumes:
+            - ./:/workspace
