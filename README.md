@@ -20,11 +20,18 @@ Docker で動かしているので，どんな環境でもできる (はず...) 
 ## 環境の立ち上げ
 ```bash
 # イメージの作成
-$ docker build -t programming_languages ./
+$ docker-compose build
 
-# docker-compose で起動
-$ docker-compose up
+# コンテナの起動
+$ docker-compose run --rm programming_languages_env bash
 
-# docker-compose で終了
-$ docker-compose down
+# Ctrl + D で終了
+```
+
+## M1 MacBook Air での実行
+Node.js の最新安定版が対応していないので，以下のコメントアウトを外す．
+
+```Dockerfile
+# TypeScript (M1 Mac)
+apt install -y nodejs npm && npm install -g n && n v14.18.1 && apt purge -y nodejs npm
 ```

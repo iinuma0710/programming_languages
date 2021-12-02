@@ -1,7 +1,8 @@
 version: '3'
 services:
-    pytorch:
-        image: programming_languages_env:latest
+    programming_languages_env:
+        build: ./
+        image: programming_languages_image
         container_name: programming_languages_container
         tty: true
         stdin_open: true
