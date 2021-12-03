@@ -8,7 +8,9 @@ ENV DEBIAN_FRONTEND=noninteractive
 ENV PATH=$PATH:/usr/local/go/bin
 ENV GOPATH=/workspace/golang
 
-RUN apt-get install -y git curl wget build-essential apt-utils software-properties-common && \
+# RUN echo 'nameserver 8.8.8.8' >> /etc/resolv.conf
+RUN apt-get install -y git curl wget apt-utils build-essential software-properties-common libreadline-gplv2-dev \
+    libncursesw5-dev libssl-dev libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev libffi-dev zlib1g-dev &&\
     # C/C++
     apt-get install -y gcc-10 gcc-10-base gcc-10-doc g++-10 libstdc++-10-dev libstdc++-10-doc && \
     update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 10 && \
@@ -20,7 +22,6 @@ RUN apt-get install -y git curl wget build-essential apt-utils software-properti
     add-apt-repository ppa:deadsnakes/ppa -y && apt install -y python3.10 python3-pip && \
     update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.10 20 && \
     update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.8 10 && \
-    update-alternatives --config python3 && \
     # Rust
     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- --default-toolchain none -y &&\
     . $HOME/.cargo/env && rustup update stable && \
