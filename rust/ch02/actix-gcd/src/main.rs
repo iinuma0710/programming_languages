@@ -1,4 +1,11 @@
 use actix_web::{web, App, HttpResponse, HttpServer};
+use serde::Deserialise;
+
+#[derive(Deserialize)]
+struct GcdParameters {
+    n: u64,
+    m: u64,
+}
 
 fn main() {
     let server = HttpServer::new(|| {
