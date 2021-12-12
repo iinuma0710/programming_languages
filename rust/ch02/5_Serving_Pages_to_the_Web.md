@@ -134,5 +134,55 @@ struct GcdParameters {
 ここまで定義をしておけば，ハンドラ関数を簡単に記述できます．
 
 ```rust
+fn post_gcd(form: web::Form<GcdParameters>) -> HttpResponse {
+    if form.n == 0 || form.m == 0 {
+        return HttpResponse::BadRequest()
+            .content_type("text/html")
+            .body("Computing the GCD with zero is boring.");
+    }
 
+    let response = format!(
+        "The greatest common divisor of the numbers {} and {} is <b>{}</b>\n",
+        form.n, form.m, gcd(form.n, form.m)
+    );
+
+    HttpResponse::Ok().content_type("text/html").body(response)
+}
 ```
+
+Actix のリクエストハンドラは，Actix が HTTP リクエストを抽出できる型を持つ引数を取る必要があります．
+ここでは，```web::Form<GcdParameters>``` という型を取る ```form``` を引数として渡しています．
+Actix は ```T``` がデシリアライズできる場合に限り，```web::Form<T>``` を HTML の POST リクエストから抽出します．
+ここでは，```#[derive(Deserialize)]``` 属性によってデシリアライズが可能となっています．
+もし，デシリアライズできない型を指定していた場合には，コンパイル時に Rust がその間違いを指摘してくれます．  
+```post_gcd``` 関数では，初めにパラメータが0でないことを確認し，条件を満たさなければ ```400 BAD REQUEST``` を返します．
+その後，最大公約数を求めてレスポンスを構築しています．
+```format!``` は文字列を返すマクロです．
+最後にレスポンスのテキストを ```200 OK``` でラップして返しています．
+
+そして ```main``` 関数に ```post_gcd``` を登録します．
+
+```rust
+fn main() {
+    let server = HttpServer::new(|| {
+        App::new()
+            .route("/", web::get().to(get_index))
+            .route("/gcd", web::post().to(post_gcd))
+    });
+
+    println!("Serving on http://localhost:3000...");
+    server
+        .bind("127.0.0.1:3000").expect("error binding server to address")
+        .run().expect("error running server");
+}
+```
+
+それでは実行してみましょう．
+
+```bash
+$ cargo run
+```
+
+次のように表示されれば成功です．
+
+<div align="center"><img src="../images/ch02_02.png" width=450></div>
