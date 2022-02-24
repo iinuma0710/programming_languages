@@ -201,4 +201,12 @@ Proxmox VE の関連ページ:
 - [Proxmox VE7.0をインストールしクラスタを構築する](https://qiita.com/yuuri23/items/7d3bc77b441728f8621b)
 
 ## QEMU と libvirt を使って仮想マシンを始める
+仮想マシンのデプロイが完了したら，```virsh``` コマンドで管理が可能になります．  
+仮想マシンの起動は ```start``` キーワードを使います．
+
+```bash
+$ virsh start ubuntu2004_test
+Domain ubuntu2004_test started
+```
+
 
