@@ -15,7 +15,7 @@ libvirt を用いた KVM ハイパーバイザのインストール，設定，�
 コマンドラインツールである **virsh** や，GUI ツールの **virt-manager** を使いこなせるようになることを目指します．
 
 - [第3章: KVM ハイパーバイザと libvirt，ovirt のインストール](./ch03_Installing_KVM_Hypervisor_libvirt_and_ovirt.md)
-- [第4章: libvirt のネットワーク]()
+- [第4章: libvirt のネットワーク](./ch04_llibvirt_Networking.md)
 - [第5章: libvirt のストレージ]()
 - [第6章: 仮想ディスプレイデバイスとプロトコル]()
 - [第7章: 仮想マシンのインストールと設定，およびライフサイクル管理]()

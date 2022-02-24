@@ -209,4 +209,46 @@ $ virsh start ubuntu2004_test
 Domain ubuntu2004_test started
 ```
 
+起動中の仮想マシンの一覧は次のコマンドで確認できます．
 
+```bash
+$ virsh list
+ Id   Name              State
+---------------------------------
+ 1    ubuntu2004_test   running
+```
+
+仮想マシンの終了は ```shutdown``` コマンドを使います．
+
+```bash
+$ virsh shutdown ubuntu2004_test
+Domain ubuntu2004_test is being shutdown
+```
+
+仮想マシンの強制終了には ```destroy``` コマンドを使います．
+
+```bash
+$ virsh destroy ubuntu2004_test
+Domain ubuntu2004_test destroyed
+```
+
+仮想マシンを完全に消去する場合には，終了した上で ```undefined``` コマンド消去します．
+
+```bash
+$ virsh destroy ubuntu2004_test
+Domain ubuntu2004_test destroyed
+
+$ virsh undefine ubuntu2004_test
+Domain ubuntu2004_test has been defined
+```
+
+消去手順は逆にしても動作してしまいますが，予期しない動作となるため注意が必要です．  
+これらの操作は，最初にインストールした **virt-manager** を使って GUI から実行することもできます．
+
+<div align="center"><img src="./images/virt-manager.png" width=600></div>
+
+画面上で操作したい仮想マシンを右クリックすると，操作メニューが現れ，起動や終了，削除やマイグーションなどの項目が表示されます．
+
+## まとめ
+本章では，KVM と libvirt をインストールして，それを用いた基本的な操作を学びました．
+次章以降では，ネットワークやストレージなどについて扱います．
