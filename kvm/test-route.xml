@@ -1,0 +1,15 @@
+<network>
+  <name>test-route</name>
+  <uuid>53a76fde-d4c7-4108-8cdc-6636eb6b5bb5</uuid>
+  <forward dev="enp5s0" mode="route">
+    <interface dev="enp5s0" />
+  </forward>
+  <bridge name="virbr2" stp="on" delay="0"/>
+  <mac address="00:16:3e:7f:7f:bd"/>
+  <domain name="yukoweb-route" />
+  <ip address="192.168.124.1" netmask="255.255.255.0">
+    <dhcp>
+      <range start="192.168.124.100" end="192.168.124.254"/>
+    </dhcp>
+  </ip>
+</network>

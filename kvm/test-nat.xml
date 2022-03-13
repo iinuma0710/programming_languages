@@ -1,0 +1,17 @@
+<network>
+  <name>test-nat</name>
+  <uuid>a587a97e-5697-43a1-97f7-1ea4fa5ed1fd</uuid>
+  <forward mode="nat">
+    <nat>
+      <port start="1024" end="65535"/>
+    </nat>
+  </forward>
+  <bridge name="virbr1" stp="on" delay="0"/>
+  <mac address="00:16:3e:62:f3:9b"/>
+  <ip address="192.168.123.1" netmask="255.255.255.0">
+    <dhcp>
+      <range start="192.168.123.2" end="192.168.123.254"/>
+    </dhcp>
+  </ip>
+</network>
+

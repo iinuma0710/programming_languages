@@ -111,5 +111,148 @@ VMware の vSphere でも同様の設定が行われますし，Hyper-V では�
 
 それでは，仮想ネットワークの設定方法について見ていきましょう．
 
-1. デフォルトネットワークの設定が書かれた XML ファイルをテンプレートとして，新しいネットワークファイルを作ってみましょう．
-2. 
+1. デフォルトネットワークの設定が書かれた XML ファイルをテンプレートとしてネットワークファイルを作ってみましょう．
+    ```bash
+    $ virsh net-dumpxml default > default.xml
+    ```
+    ```default.xml``` の中身は次のようになっています．
+    ```xml
+    <network>
+        <name>default</name>
+        <uuid>1ba419f5-30a3-4fea-9c34-d743c672b8f1</uuid>
+        <forward mode="nat">
+            <nat>
+                <port start="1024" end="65535"/>
+            </nat>
+        </forward>
+        <bridge name="virbr0" stp="on" delay="0"/>
+        <mac address="52:54:00:c0:fb:78"/>
+        <ip address="192.168.122.1" netmask="255.255.255.0">
+            <dhcp>
+                <range start="192.168.122.2" end="192.168.122.254"/>
+            </dhcp>
+        </ip>
+    </network>
+    ```
+2. 新しいオブジェクト UUID とユニークな MAC アドレスを生成します．UUID は ```uuidgen``` コマンドで生成できますが，MAC アドレスの生成は[Red Hat のウェブサイト](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/6/html/virtualization_administration_guide/sect-virtualization-tips_and_tricks-generating_a_new_unique_mac_address)で紹介されている方法を使います．
+    ```bash
+    $ uuidgen
+    a587a97e-5697-43a1-97f7-1ea4fa5ed1fd
+
+    $ python2
+    >>> import random
+    >>> def randomMAC():
+    ...     mac = [ 0x00, 0x16, 0x3e,
+    ...             random.randint(0x00, 0x7f),
+    ...             random.randint(0x00, 0xff),
+    ...             random.randint(0x00, 0xff) ]
+    ...     return ':'.join(map(lambda x: "%02x" % x, mac))
+    ... 
+    >>> print randomMAC()
+    00:16:3e:62:f3:9b
+    ```
+    これをもとに，XML ファイルを書き換えます．新しくブリッジを設定するので ```<bridge name="virbr1">``` としています．
+    ```xml
+    <network>
+        <name>test-nat</name>
+        <uuid>a587a97e-5697-43a1-97f7-1ea4fa5ed1fd</uuid>
+        <forward mode="nat">
+            <nat>
+                <port start="1024" end="65535"/>
+            </nat>
+        </forward>
+        <bridge name="virbr1" stp="on" delay="0"/>
+        <mac address="00:16:3e:62:f3:9b"/>
+        <ip address="192.168.123.1" netmask="255.255.255.0">
+            <dhcp>
+                <range start="192.168.123.2" end="192.168.123.254"/>
+            </dhcp>
+        </ip>
+    </network>
+    ```
+3. 最後に ```virsh``` コマンドで XML ファイルを取り込み，新しい仮想ネットワークを作成します．
+   ```bash
+   $ virsh net-define test-nat.xml
+   Network test-nat defined from test-nat.xml
+
+   $ virsh net-start test-nat
+   Network test-nat started
+
+   $ virsh net-autostart test-nat
+   Network test-nat marked as autostarted
+
+   $ virsh net-list
+   Name       State    Autostart   Persistent
+   ---------------------------------------------
+   default    active   yes         yes
+   test-nat   active   yes         yes
+   ```
+
+同様の手順で routed モードと isolated モードの仮想ネットワークも作成します．
+routed モードのネットワークの設定には，物理インターフェイスが必要なので ```ifconfig``` などで確認しておきます．
+
+```test-route.xml```
+```xml
+<network>
+  <name>test-route</name>
+  <uuid>53a76fde-d4c7-4108-8cdc-6636eb6b5bb5</uuid>
+  <forward dev="enp5s0" mode="route">
+    <interface dev="enp5s0" />
+  </forward>
+  <bridge name="virbr2" stp="on" delay="0"/>
+  <mac address="00:16:3e:7f:7f:bd"/>
+  <domain name="yukoweb-route" />
+  <ip address="192.168.124.1" netmask="255.255.255.0">
+    <dhcp>
+      <range start="192.168.124.100" end="192.168.124.254"/>
+    </dhcp>
+  </ip>
+</network>
+```
+
+routed モードでは，ネットワークインターフェイスが接続しているのと同じサブネットが使われます．
+
+```test-iso.xml```
+```xml
+<network>
+  <name>test-iso</name>
+  <uuid>b29f4b10-890e-4b39-aca5-e3ac3999a092</uuid>
+  <bridge name="virbr3" stp="on" delay="0">
+  <mac address="00:16:3e:23:3d:12"/>
+  </bridge>
+  <domain name="yukoweb-iso" />
+  <ip address="192.168.125.1" netmask="255.255.255.0">
+    <dhcp>
+      <range start="192.168.125.128" end="192.168.125.254"/>
+    </dhcp>
+  </ip>
+</network>
+```
+
+仮想ネットワークの設定は，仮想マシンマネージャの GUI からも行うことができます．
+しかし，大規模な環境では XML で記述した設定ファイルを取り込むほうが簡単に設定ができます．
+
+ここまでは，ホスト側で仮想ネットワークを設定していましたが，```virsh``` コマンドで仮想マシンに仮想ネットワークカードを追加して，仮想ネットワークに接続することもできます．
+次の例では，```ubuntu2004_test``` を isolated モードの仮想ネットワークに接続します．
+
+```bash
+$ virsh attach-interface --domain ubuntu2004_test --source isolated --type network --model virtio --config --live
+```
+
+以上が基本的な仮想ネットワークの構成になります．
+これ以外にも SR-IOV のような接続方法もありますが，これらについては後ほど説明します．
+
+## TAP/TUN デバイスでユーザー空間ネットワークを利用する
+第1章で使用した ```virt-host-validate``` コマンドは，次のようなデバイスが存在することをチェックしています．
+
+- ```/dev/kvm```  
+  KVM ドライバによって作成され，仮想マシンが物理ハードウェアに接続するのに必要となる．これがないと仮想マシンの性能が著しく低下する．
+- ```/dev/vhost-net```  
+  vhost-net インスタンスの設定を行うインターフェイスとして機能する．これがないと仮想マシンのネットワーク性能が著しく低下する．
+- ```/dev/net/tun```  
+  仮想マシンのネットワーク接続を容易にするための TUN/TAP デバイスを作成するために使用される．
+
+ここでは，特に最後の項目について詳しく見ていきます．
+
+
+  

@@ -1,0 +1,13 @@
+<network>
+  <name>test-iso</name>
+  <uuid>b29f4b10-890e-4b39-aca5-e3ac3999a092</uuid>
+  <bridge name="virbr3" stp="on" delay="0">
+  <mac address="00:16:3e:23:3d:12"/>
+  </bridge>
+  <domain name="yukoweb-iso" />
+  <ip address="192.168.125.1" netmask="255.255.255.0">
+    <dhcp>
+      <range start="192.168.125.128" end="192.168.125.254"/>
+    </dhcp>
+  </ip>
+</network>
