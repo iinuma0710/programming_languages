@@ -1,1 +1,1 @@
-# Learning Go
+# 実用 Go 言語

@@ -6,7 +6,7 @@ Docker で動かしているので，どんな環境でもできる (はず...) 
 「[Sams Teach Yourself C++ in One Hour a Day, 9th edition](https://learning.oreilly.com/library/view/sams-teach-yourself/9780137334674/)」 (著：Siddhartha Rao, February 2022)
 
 ## Golang
-「[Learning Go](https://www.oreilly.com/library/view/learning-go/9781492077206/)」 (著：John Bodner, March 2021)
+「[実用 Go 言語](https://www.oreilly.co.jp/books/9784873119694/)」 (著：渋川よしき，辻大志郎，真野隼記，2022年4月)
 
 ## Python
 「[Fluent Python, 2nd Edition](https://learning.oreilly.com/library/view/fluent-python-2nd/9781492056348/)」 (著：Luciano Ramalho, April 2022)
